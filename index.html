@@ -8,20 +8,22 @@
     :root {
       --base: #1e1e2e; --mantle: #181825; --surface0: #313244;
       --surface1: #45475a; --text: #cdd6f4; --subtext0: #a6adc8;
-      --blue: #89b4fa; --pink: #f38ba8; --crust: #11111b;
+      --accent: #89b4fa; --crust: #11111b;
     }
     * { box-sizing: border-box; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
     body {
       margin: 0; min-height: 100vh; background: var(--base); color: var(--text);
       font-family: monospace; display: flex; flex-direction: column; align-items: center; padding: 25px 20px;
     }
-    .theme-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-    .theme-btn {
+    .theme-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; align-items: center; }
+    .theme-btn, .accent-select {
       background: var(--mantle); color: var(--text); border: 2px solid var(--surface1);
-      border-radius: 6px; padding: 6px 14px; font-family: monospace; font-weight: bold; cursor: pointer;
+      border-radius: 6px; padding: 6px 12px; font-family: monospace; font-weight: bold; cursor: pointer;
     }
-    .theme-btn:hover, .theme-btn.active { border-color: var(--blue); background: var(--surface0); }
-    h1 { color: var(--blue); margin: 0 0 6px 0; }
+    .theme-btn:hover, .theme-btn.active, .accent-select:hover, .accent-select:focus {
+      border-color: var(--accent); background: var(--surface0); outline: none;
+    }
+    h1 { color: var(--accent); margin: 0 0 6px 0; }
     p { color: var(--subtext0); margin: 0 0 25px 0; text-align: center; }
     .picker-box {
       background: var(--mantle); border: 2px solid var(--surface1); border-radius: 12px;
@@ -31,14 +33,14 @@
       width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;
       background: var(--surface0); padding: 12px; border-radius: 8px;
     }
-    .upload-label { font-weight: bold; color: var(--blue); }
+    .upload-label { font-weight: bold; color: var(--accent); }
     input[type="file"] { width: 100%; color: var(--text); font-family: monospace; }
     #imgCanvas {
-      max-width: 100%; max-height: 300px; border: 2px solid var(--blue);
+      max-width: 100%; max-height: 300px; border: 2px solid var(--accent);
       border-radius: 6px; display: none; touch-action: none; cursor: crosshair;
     }
     #magnifier {
-      position: fixed; width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--blue);
+      position: fixed; width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--accent);
       box-shadow: 0 4px 15px rgba(0,0,0,0.6); pointer-events: none; display: none; z-index: 999; image-rendering: pixelated;
     }
     .preview { width: 100%; height: 90px; border-radius: 8px; border: 2px solid var(--surface1); background: #89b4fa; }
@@ -49,18 +51,34 @@
       background: var(--surface0); padding: 10px 14px; border-radius: 6px; font-size: 0.95rem;
     }
     .copy-btn {
-      background: var(--blue); color: var(--crust); border: none; border-radius: 5px;
+      background: var(--accent); color: var(--crust); border: none; border-radius: 5px;
       padding: 6px 12px; font-family: monospace; font-weight: bold; cursor: pointer;
     }
-    a.back { margin-top: 25px; color: var(--pink); text-decoration: none; font-weight: bold; }
+    a.back { margin-top: 25px; color: var(--accent); text-decoration: none; font-weight: bold; }
   </style>
 </head>
 <body>
   <div class="theme-bar">
-    <button class="theme-btn active" onclick="setTheme('mocha', this)">🌿 Mocha</button>
-    <button class="theme-btn" onclick="setTheme('macchiato', this)">🌺 Macchiato</button>
-    <button class="theme-btn" onclick="setTheme('frappe', this)">🪴 Frappé</button>
-    <button class="theme-btn" onclick="setTheme('latte', this)">🌻 Latte</button>
+    <button class="theme-btn active" onclick="setTheme('mocha')">🌿 Mocha</button>
+    <button class="theme-btn" onclick="setTheme('macchiato')">🌺 Macchiato</button>
+    <button class="theme-btn" onclick="setTheme('frappe')">🪴 Frappé</button>
+    <button class="theme-btn" onclick="setTheme('latte')">🌻 Latte</button>
+    <select id="accentSelect" class="accent-select" onchange="setAccent(this.value)" aria-label="Accent Color">
+      <option value="rosewater">🌸 Rosewater</option>
+      <option value="flamingo">🦩 Flamingo</option>
+      <option value="pink">💖 Pink</option>
+      <option value="mauve">🔮 Mauve</option>
+      <option value="red">🍎 Red</option>
+      <option value="maroon">🍒 Maroon</option>
+      <option value="peach">🍑 Peach</option>
+      <option value="yellow">🍋 Yellow</option>
+      <option value="green">🍏 Green</option>
+      <option value="teal">🌊 Teal</option>
+      <option value="sky">☁️ Sky</option>
+      <option value="sapphire">💎 Sapphire</option>
+      <option value="blue" selected>💙 Blue</option>
+      <option value="lavender">🪻 Lavender</option>
+    </select>
   </div>
 
   <h1>🎨 Color Picker</h1>
@@ -88,21 +106,41 @@
 
   <script>
     const themes = {
-      mocha: { base: '#1e1e2e', mantle: '#181825', surface0: '#313244', surface1: '#45475a', text: '#cdd6f4', subtext0: '#a6adc8', blue: '#89b4fa', pink: '#f38ba8', crust: '#11111b' },
-      macchiato: { base: '#24273a', mantle: '#1e2030', surface0: '#363a4f', surface1: '#494d64', text: '#cad3f5', subtext0: '#a5adcb', blue: '#8aadf4', pink: '#f5bde6', crust: '#181926' },
-      frappe: { base: '#303446', mantle: '#292c3c', surface0: '#414559', surface1: '#51576d', text: '#c6d0f5', subtext0: '#a5adce', blue: '#8caaee', pink: '#f4b8e4', crust: '#232634' },
-      latte: { base: '#eff1f5', mantle: '#e6e9ef', surface0: '#ccd0da', surface1: '#bcc0cc', text: '#4c4f69', subtext0: '#6c6f85', blue: '#1e66f5', pink: '#ea76cb', crust: '#eff1f5' }
+      mocha: {
+        base: '#1e1e2e', mantle: '#181825', surface0: '#313244', surface1: '#45475a', text: '#cdd6f4', subtext0: '#a6adc8', crust: '#11111b',
+        accents: { rosewater: '#f5e0dc', flamingo: '#f2cdcd', pink: '#f5c2e7', mauve: '#cba6f7', red: '#f38ba8', maroon: '#eba0ac', peach: '#fab387', yellow: '#f9e2af', green: '#a6e3a1', teal: '#94e2d5', sky: '#89dceb', sapphire: '#74c7ec', blue: '#89b4fa', lavender: '#b4befe' }
+      },
+      macchiato: {
+        base: '#24273a', mantle: '#1e2030', surface0: '#363a4f', surface1: '#494d64', text: '#cad3f5', subtext0: '#a5adcb', crust: '#181926',
+        accents: { rosewater: '#f4dbd6', flamingo: '#f0c6c6', pink: '#f5bde6', mauve: '#c6a0f6', red: '#ed8796', maroon: '#ee99a0', peach: '#f5a97f', yellow: '#eed49f', green: '#a6da95', teal: '#8bd5ca', sky: '#91d7e3', sapphire: '#7dc4e4', blue: '#8aadf4', lavender: '#b7bdf8' }
+      },
+      frappe: {
+        base: '#303446', mantle: '#292c3c', surface0: '#414559', surface1: '#51576d', text: '#c6d0f5', subtext0: '#a5adce', crust: '#232634',
+        accents: { rosewater: '#f2d5cf', flamingo: '#eebebe', pink: '#f4b8e4', mauve: '#ca9ee6', red: '#e78284', maroon: '#ea999c', peach: '#ef9f76', yellow: '#e5c890', green: '#a6d189', teal: '#81c8be', sky: '#99d1db', sapphire: '#85c1dc', blue: '#8caaee', lavender: '#babbf1' }
+      },
+      latte: {
+        base: '#eff1f5', mantle: '#e6e9ef', surface0: '#ccd0da', surface1: '#bcc0cc', text: '#4c4f69', subtext0: '#6c6f85', crust: '#eff1f5',
+        accents: { rosewater: '#dc8a78', flamingo: '#dd7878', pink: '#ea76cb', mauve: '#8839ef', red: '#d20f39', maroon: '#e64553', peach: '#fe640b', yellow: '#df8e1d', green: '#40a02b', teal: '#179299', sky: '#04a5e5', sapphire: '#209fb5', blue: '#1e66f5', lavender: '#7287fd' }
+      }
     };
 
-    function setTheme(name, btn) {
-      const p = themes[name];
-      for (const [k, v] of Object.entries(p)) document.documentElement.style.setProperty(`--${k}`, v);
-      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      localStorage.setItem('catppuccin-theme', name);
+    let currentTheme = localStorage.getItem('catppuccin-theme') || 'mocha';
+    let currentAccent = localStorage.getItem('catppuccin-accent') || 'blue';
+
+    function applyPalette() {
+      const p = themes[currentTheme] || themes.mocha;
+      const root = document.documentElement.style;
+      for (const [k, v] of Object.entries(p)) {
+        if (k !== 'accents') root.setProperty(`--${k}`, v);
+      }
+      root.setProperty('--accent', p.accents[currentAccent] || p.accents.blue);
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick').includes(`'${currentTheme}'`)));
+      document.getElementById('accentSelect').value = currentAccent;
     }
-    const saved = localStorage.getItem('catppuccin-theme');
-    if (saved && themes[saved]) setTheme(saved, document.querySelector(`button[onclick*="${saved}"]`));
+
+    function setTheme(name) { currentTheme = name; localStorage.setItem('catppuccin-theme', name); applyPalette(); }
+    function setAccent(accent) { currentAccent = accent; localStorage.setItem('catppuccin-accent', accent); applyPalette(); }
+    applyPalette();
 
     const picker = document.getElementById('picker'), preview = document.getElementById('preview');
     const hexVal = document.getElementById('hexVal'), rgbVal = document.getElementById('rgbVal'), hslVal = document.getElementById('hslVal');
@@ -110,14 +148,10 @@
     const ctx = imgCanvas.getContext('2d', { willReadFrequently: true });
     const magnifier = document.getElementById('magnifier'), magCtx = magnifier.getContext('2d');
 
-    function rgbToHex(r, g, b) {
-      return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-    }
+    function rgbToHex(r, g, b) { return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join(''); }
 
     function updateColor(hex) {
-      picker.value = hex;
-      preview.style.backgroundColor = hex;
-      hexVal.textContent = hex.toUpperCase();
+      picker.value = hex; preview.style.backgroundColor = hex; hexVal.textContent = hex.toUpperCase();
       const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
       rgbVal.textContent = `rgb(${r}, ${g}, ${b})`;
       const rn = r / 255, gn = g / 255, bn = b / 255;
@@ -140,10 +174,7 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         const img = new Image();
-        img.onload = () => {
-          imgCanvas.width = img.width; imgCanvas.height = img.height;
-          ctx.drawImage(img, 0, 0); imgCanvas.style.display = 'block';
-        };
+        img.onload = () => { imgCanvas.width = img.width; imgCanvas.height = img.height; ctx.drawImage(img, 0, 0); imgCanvas.style.display = 'block'; };
         img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
